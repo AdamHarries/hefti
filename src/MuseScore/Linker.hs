@@ -113,6 +113,8 @@ writetex env bk = do
 
 pdftex :: BuildEnv -> Book TexFile -> IO (Book PdfFile)
 pdftex env bk = do
+        -- run xelatex twice to get the ToC
+        callProcess "xelatex" ["-output-directory", toFilePath $ tex_d env, toFilePath $ (dat bk)]
         callProcess "xelatex" ["-output-directory", toFilePath $ tex_d env, toFilePath $ (dat bk)]
         bookpdf <- copyToDir pdfpath (book_d env)
         -- SD.copyFile (toFilePath pdfpath) (toFilePath bookpdf)

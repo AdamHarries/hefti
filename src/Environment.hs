@@ -229,8 +229,8 @@ opts base =
   info
     ((parseCmdLineArgs base) <**> helper)
     ( fullDesc
-        <> progDesc "Generate pdf \"books\" of charts from individua musescore files in src"
-        <> header "Hefti - an arranging tool for combining individual songs into full charts"
+        <> progDesc "Generate pdf \"books\" of charts from individual musescore files in src"
+        <> header "Hefti - an arranging tool for song scores into player books"
     )
 
 copyToDir :: AbsFile -> AbsDir -> IO AbsFile
