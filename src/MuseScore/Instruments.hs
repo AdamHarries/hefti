@@ -15,6 +15,7 @@ data Instrument
   = Piano
   | AltoSax
   | TenorSax
+  | BaritoneSax
   | Trumpet
   | Trombone
   | Clarinet
@@ -32,20 +33,36 @@ instance Show Instrument where
   show (Unknown t) = "Unknown Instrument" ++ show t
 
 parseInst :: TE.Text -> Instrument
-parseInst "Piano"           = Piano
-parseInst "Alto Sax"        = AltoSax
-parseInst "Alto Saxophone"  = AltoSax
-parseInst "Tenor Saxophone" = TenorSax
-parseInst "B♭ Trumpet"      = Trumpet
-parseInst "B♭ Clarinet"     = Clarinet
-parseInst "Acoustic Guitar" = Guitar
-parseInst "Bass Guitar"     = Bass
-parseInst "Drumset"         = Drums
-parseInst t                 = Unknown t
+parseInst name = case parse instrumentParser "" (TE.unpack name) of
+    Left pe -> Unknown (TE.pack $ show pe)
+    Right i -> i
+
+instrumentParser :: Parsec String st Instrument
+instrumentParser =
+      fixedParser "Piano" Piano
+  <|> fixedParser "B♭ Trumpet" Trumpet
+  <|> fixedParser "B♭ Clarinet" Clarinet
+  <|> fixedParser "Acoustic Guitar" Guitar
+  <|> fixedParser "Bass Guitar" Bass
+  <|> fixedParser "Drumset" Drums
+  <|> saxParser "Alto" AltoSax
+  <|> saxParser "Tenor" TenorSax
+  <|> saxParser "Baritone" BaritoneSax
+
+fixedParser :: String -> Instrument -> Parsec String st Instrument
+fixedParser name value = try $ string name >> pure value
+
+
+saxParser :: String -> Instrument -> Parsec String st Instrument
+saxParser saxtype saxvalue = try $ do
+  string saxtype
+  sax <- optional $ do
+        string " Sax"
+        optional $ string "ophone"
+  pure saxvalue
 
 -- Their Keys
 data Key = C | Eb | Bb deriving (Eq)
-
 instance Show Key where
   show C  = "C"
   show Eb = "Eb"
@@ -58,24 +75,3 @@ key Trumpet  = Bb
 key Piano    = C
 key Clarinet = Bb
 key _        = C
-
-type TNumber = Int
-
-data TOperator = TAdd
-               | TSubtract
-                 deriving (Eq, Ord, Show)
-
-data TExpression = TNode (TExpression) TOperator (TExpression)
-                 | TTerminal TNumber
-                   deriving (Show)
-
-pianoParser :: Parsec String st Instrument
-pianoParser = string "Piano" >> pure Piano
-
-saxParser :: Parsec String st Instrument
-saxParser = do
-    kind <- string "Alto"
-    sax <- do
-        string "Sax"
-        optional $ string "ophone"
-    pure AltoSax
