@@ -92,8 +92,8 @@ makeRule source target f = do
   targetExists <- doesFileExist target
   if targetExists
     then do
-      sourceTime <- getAccessTime source
-      targetTime <- getAccessTime target
+      sourceTime <- getModificationTime source
+      targetTime <- getModificationTime target
       if sourceTime > targetTime then do
         putStrLn $ "Creating target:\n\t" ++ (show target) ++ "\n from newer source:\n\t" ++ (show source)
         f source target

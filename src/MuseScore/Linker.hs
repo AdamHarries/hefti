@@ -11,16 +11,16 @@ module MuseScore.Linker (
 ) where
 
 import           Control.Exception
-import           Data.Map            as DM
-import           Data.Map.Merge.Lazy as DMML
-import           Data.Set            as DS
-import           Data.Text           as TE
-import qualified Data.Text.IO        as TEIO
+import           Data.Map              as DM
+import           Data.Map.Merge.Lazy   as DMML
+import           Data.Set              as DS
+import           Data.Text             as TE
+import qualified Data.Text.IO          as TEIO
 import           Environment
 import           MuseScore.Compiler
-import           MuseScore.Types
+import           MuseScore.Instruments
 import           Path
-import qualified System.Directory    as SD
+import qualified System.Directory      as SD
 import           System.Process
 import           Text.RawString.QQ
 

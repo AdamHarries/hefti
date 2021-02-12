@@ -37,6 +37,7 @@ dependencies:
 - xml-html-conduit-lens
 - lens
 - raw-strings-qq
+- parsec
 
 library:
   source-dirs: src

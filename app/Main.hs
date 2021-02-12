@@ -1,13 +1,13 @@
 module Main where
 
 
-import           Data.Map            as DM
+import           Data.Map              as DM
 import           Data.Maybe
-import           Data.Text           as TE
+import           Data.Text             as TE
 import           Environment
 import           MuseScore.Compiler
+import           MuseScore.Instruments
 import           MuseScore.Linker
-import           MuseScore.Types
 import           Options.Applicative
 import           Path
 import           Path.IO

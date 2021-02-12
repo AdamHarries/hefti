@@ -10,7 +10,8 @@ module MuseScore.Compiler
     substitute,
     partfiles,
     pdffiles,
-    PDFArrangement(..)
+    PDFArrangement(..),
+        Score (..)
   )
 where
 
@@ -24,7 +25,7 @@ import           Data.Maybe
 import           Data.Text                         as TE
 import           Debug.Trace
 import           Environment
-import           MuseScore.Types
+import           MuseScore.Instruments
 import           Path
 import           System.Process
 import           Text.XML
@@ -48,6 +49,31 @@ import qualified Text.Xml.Lens                     as XLens
 -- [(ScoreName, [(Instrument, Object)])] into a pipeline that handles structures that are of shape
 -- (roughly, again) [(Instrument, [(ScoreName, Object)])]. During the compiler we care about
 -- splitting/generating *per score*, wheras afterwards we care about linking *per instrument*.
+
+
+-- This is our key data structure for representing a score, or parts in a score, or filenames to that
+-- score, etc, etc. It behaves a bit like a generic AST, representing various parts of the compilation process.
+data Score a = Score
+  { name  :: TE.Text, -- the name of the score that this belongs to
+    spath :: AbsFile, -- the original source file that this was derived from
+    parts :: a -- the parts in this score
+  }
+  deriving (Show)
+
+instance Functor Score where
+  -- fmap :: (a -> b) -> (Score a) -> (Score b)
+  fmap f sc = Score {
+    name = name sc,
+    spath = spath sc,
+    parts = f $ parts sc
+  }
+  -- (<$) :: a -> f b -> f a
+  (<$) p sc = Score {
+    name = name sc,
+    spath = spath sc,
+    parts = p
+  }
+
 
 -- Step 1. We want to parse a single MuseScore XML document into a freshly-parsed score, which contains
 -- the various parts as simple nodes in the XML tree.
@@ -156,7 +182,7 @@ partfiles env scr = do
         newpath = do
           (p, _) <- splitExtension srcfile
           let oldfile = toFilePath $ filename p
-          let k = (show $ key inst)
+          let k = (show inst)
           newfile <- parseRelFile (oldfile ++ "_" ++ k)
           f <- addExtension ".mscx" newfile
           pure $ (parts_d env) </> f

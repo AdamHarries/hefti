@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4559b75dcae9ccf56af0b1cd94aa5b90d779f0328dc4a7bee9788fc76dcc3ad5
+-- hash: a5c035945ece40656445924410c7c06f24d0dcf0fb79693e5f6e8324456ea1cc
 
 name:           hefti
 version:        0.1.0.0
@@ -29,8 +29,8 @@ library
   exposed-modules:
       Environment
       MuseScore.Compiler
+      MuseScore.Instruments
       MuseScore.Linker
-      MuseScore.Types
   other-modules:
       Paths_hefti
   hs-source-dirs:
@@ -44,6 +44,7 @@ library
     , hspec
     , lens
     , optparse-applicative
+    , parsec
     , path
     , path-io
     , process
@@ -72,6 +73,7 @@ executable hefti
     , hspec
     , lens
     , optparse-applicative
+    , parsec
     , path
     , path-io
     , process
@@ -101,6 +103,7 @@ test-suite hefti-test
     , hspec
     , lens
     , optparse-applicative
+    , parsec
     , path
     , path-io
     , process
