@@ -29,33 +29,41 @@ instance Show Instrument where
   show Piano       = "Piano"
   show AltoSax     = "Alto Sax"
   show TenorSax    = "Tenor Sax"
+  show BaritoneSax = "Baritone Sax"
   show Trumpet     = "B♭ Trumpet"
+  show Trombone    = "Trombone"
+  show Clarinet    = "B♭ Clarinet"
+  show Drums       = "Drumset"
+  show Guitar      = "Acoustic Guitar"
+  show Bass        = "Bass Guitar"
   show (Unknown t) = "Unknown Instrument" ++ show t
 
 parseInst :: TE.Text -> Instrument
 parseInst name = case parse instrumentParser "" (TE.unpack name) of
-    Left pe -> Unknown (TE.pack $ show pe)
+    Left pe -> Unknown name
     Right i -> i
 
 instrumentParser :: Parsec String st Instrument
 instrumentParser =
-      fixedParser "Piano" Piano
-  <|> fixedParser "B♭ Trumpet" Trumpet
-  <|> fixedParser "B♭ Clarinet" Clarinet
-  <|> fixedParser "Acoustic Guitar" Guitar
-  <|> fixedParser "Bass Guitar" Bass
-  <|> fixedParser "Drumset" Drums
-  <|> saxParser "Alto" AltoSax
-  <|> saxParser "Tenor" TenorSax
-  <|> saxParser "Baritone" BaritoneSax
+      fixedParser Piano
+  <|> fixedParser Trumpet
+  <|> fixedParser Clarinet
+  <|> optionParser Guitar ["Acoustic Guitar", "Guitar"]
+  <|> optionParser Bass ["Bass", "Bass Guitar", "Acoustic Bass"]
+  <|> optionParser Drums ["Drums", "Drumset"]
+  <|> saxParser ["Alto"] AltoSax
+  <|> saxParser ["Tenor"] TenorSax
+  <|> saxParser ["Bari", "Baritone"] BaritoneSax
 
-fixedParser :: String -> Instrument -> Parsec String st Instrument
-fixedParser name value = try $ string name >> pure value
+fixedParser :: Instrument -> Parsec String st Instrument
+fixedParser inst = try $ string (show inst) >> pure inst
 
+optionParser :: Instrument -> [String] -> Parsec String st Instrument
+optionParser inst names = try $ choice $ Prelude.map (\s -> try $ string s >> pure inst) names
 
-saxParser :: String -> Instrument -> Parsec String st Instrument
+saxParser :: [String] -> Instrument -> Parsec String st Instrument
 saxParser saxtype saxvalue = try $ do
-  string saxtype
+  choice $ Prelude.map (\s -> try $ string s) saxtype
   sax <- optional $ do
         string " Sax"
         optional $ string "ophone"

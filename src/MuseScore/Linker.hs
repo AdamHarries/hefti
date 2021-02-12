@@ -69,7 +69,7 @@ type PdfFile = AbsFile
 catpdfs :: BuildEnv -> Book () -> IO (Book PdfFile)
 catpdfs env bk = do
     let tf = book_d env
-    let fname = "book_" ++ (show $ key $ instrument bk)  ++ ".pdf"
+    let fname = "book_" ++ (show $ instrument bk)  ++ ".pdf"
     case (parseRelFile fname) of
         Just f -> do
             let path = tf </> f
@@ -90,7 +90,7 @@ maketex env bk = (cct [header, tunes, raw_tex_footer]) <$ bk where
 
     header :: TE.Text
     header = TE.replace "RELEASE_NAME_MARKER_STRING" (TE.pack $ release_name env)
-        (TE.replace "INSTRUMENT_KEY_MARKER_STRING" (TE.pack $ show $ key $ instrument bk) raw_tex_header)
+        (TE.replace "INSTRUMENT_KEY_MARKER_STRING" (TE.pack $ show $ instrument bk) raw_tex_header)
 
     tunes = cct $ Prelude.map tune $ DM.toList $ songs bk
 
@@ -103,7 +103,7 @@ type TexFile = AbsFile
 writetex :: BuildEnv -> Book TE.Text -> IO (Book TexFile)
 writetex env bk = do
     let tf = tex_d env
-    let fname = "book_" ++ (show $ key $ instrument bk)  ++ ".tex"
+    let fname = "book_" ++ (show $ instrument bk)  ++ ".tex"
     case (parseRelFile fname) of
         Just f -> do
             let path = tf </> f
